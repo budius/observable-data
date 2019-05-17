@@ -27,4 +27,14 @@ class CancellationTest {
 		cancellation.cancel()
 		assertFalse(wait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
 	}
+
+	@Test
+	fun does_not_crash_if_tries_to_remove_listener_that_was_never_added() {
+		val cancellation = Cancellation()
+		val wait = CountDownLatch(1)
+		val listener = { wait.countDown() }
+		cancellation.removeCallback(listener)
+		cancellation.cancel()
+		assertFalse(wait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+	}
 }
