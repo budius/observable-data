@@ -8,6 +8,10 @@ detekt {
 	input = files("$projectDir")
 	parallel = true
 	config = files("./detekt.yml")
+	filters = '.*/resources/.*,' +
+			'.*/build/.*,' +
+			'.*/.gradle/.*,' +
+			'.*/sample/src.*'
 	disableDefaultRuleSets = false
 	debug = false                                         // Adds debug output during task execution. `false` by default.
 	reports {
