@@ -34,7 +34,6 @@ class RepeatedObserversTest {
 			count.addAndGet(1)
 		}
 
-
 		Thread.sleep(TIMEOUT)
 		assertEquals(1, count.get())
 	}

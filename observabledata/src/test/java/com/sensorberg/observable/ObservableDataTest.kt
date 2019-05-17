@@ -16,7 +16,7 @@ class ObservableDataTest {
 	@Test fun all_observers_receive_values() {
 		val tested = MutableObservableData<String>()
 		val wait = CountDownLatch(3)
-		for (i in 0..3) {
+		repeat(3) {
 			tested.observe { wait.countDown() }
 		}
 		tested.value = "true"
@@ -26,10 +26,13 @@ class ObservableDataTest {
 	@Test fun all_observers_receive_values_twice() {
 		val tested = MutableObservableData<String>()
 		var wait = CountDownLatch(3)
-		for (i in 0..3) {
+		repeat(3) {
 			tested.observe {
-				if (wait.count > 0) wait.countDown()
-				else wait.countDown()
+				if (wait.count > 0) {
+					wait.countDown()
+				} else {
+					wait.countDown()
+				}
 			}
 		}
 		tested.value = "true"

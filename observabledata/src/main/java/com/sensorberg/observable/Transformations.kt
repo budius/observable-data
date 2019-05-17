@@ -54,8 +54,8 @@ object Transformations {
 
 	/**
 	 * Observes the source and passes the first non-null value to the callback.
-	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [callback] won't be called anymore.
-	 * If the cancellation value is already true, nothing will be executed
+	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [callback] won't be called.
+	 * If the cancellation value is already true when invoked, nothing will be executed.
 	 */
 	fun <T> observeNotNull(source: ObservableData<T>, cancellation: Cancellation? = null, callback: (T) -> Unit) {
 		if (cancellation?.isCancelled == true) return
@@ -77,7 +77,7 @@ object Transformations {
 	 * Maps the first non-null value from the source to a new Observable.
 	 * Similar to [Transformations.map], but only calls the mapper for the first non-null value.
 	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called.
-	 * If the cancellation value is already true, nothing will be executed and the returned result value won't change
+	 * If the cancellation value is already true when invoked, nothing will be executed and the returned result value won't change.
 	 */
 	fun <I, O> mapNotNull(source: ObservableData<I>, cancellation: Cancellation? = null, mapper: (I) -> O?): ObservableData<O> {
 		val result = MediatorObservableData<O>()
@@ -99,8 +99,8 @@ object Transformations {
 	/**
 	 * Switches the first non-null value from this ObservableData to a new ObservableData that is sourced from the result.
 	 * Similar to [Transformations.switchMap], but only calls the mapper for the first non-null value.
-	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called
-	 * If the cancellation value is already true, nothing will be executed and the returned result value won't change
+	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called.
+	 * If the cancellation value is already true when invoked, nothing will be executed and the returned result value won't change.
 	 */
 	fun <I, O> switchNotNull(source: ObservableData<I>, cancellation: Cancellation? = null, mapper: (I) -> ObservableData<O>): ObservableData<O> {
 		val result = MediatorObservableData<O>()
@@ -122,6 +122,7 @@ object Transformations {
 
 	/**
 	 * Synchronously awaits for the source data to produces a non-null value up to the specified timeout.
+	 * Throws [IllegalAccessException] if called from the ObservableData thread.
 	 */
 	fun <T> observeNotNullSync(source: ObservableData<T>, timeout: Long, unit: TimeUnit): T? {
 		if (ObservableData.isExecutorThread()) {
@@ -135,6 +136,46 @@ object Transformations {
 		}
 		wait.await(timeout, unit)
 		return result.get()
+	}
+
+	/**
+	 * Observe several sources and invokes [onDataChanged] every time any of them changes.
+	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and [onDataChanged] won't be called.
+	 * If the cancellation value is already true when invoked, nothing will be executed.
+	 */
+	fun multiObserve(sources: List<ObservableData<out Any>>,
+					 cancellation: Cancellation? = null,
+					 onDataChanged: () -> Unit) {
+		if (cancellation?.isCancelled == true) return
+		val sourcesObserver: Observer<Any> = { onDataChanged.invoke() }
+		sources.forEach { it.observe(sourcesObserver) }
+		cancellation?.onCancelled { sources.forEach { it.removeObserver(sourcesObserver) } }
+	}
+
+	/**
+	 * Maps from a list of ObservableData to a new ObservableData.
+	 * Different from [Transformations.map] the mapper simply receives a [MutableObservableData].
+	 * It's then responsibility of the mapper to set the value on the [MutableObservableData] if necessary.
+	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called.
+	 * If the cancellation value is already true when invoked, nothing will be executed and the returned result value won't change.
+	 */
+	fun <T> multiMap(sources: List<ObservableData<out Any>>,
+					 cancellation: Cancellation? = null,
+					 mapper: (MutableObservableData<T>) -> Unit): ObservableData<T> {
+		val result = MediatorObservableData<T>()
+		if (cancellation?.isCancelled == true) return result
+		val observer: Observer<Any> = {
+			mapper.invoke(result)
+		}
+		sources.forEach {
+			result.addSource(it, observer)
+		}
+		cancellation?.onCancelled {
+			sources.forEach {
+				result.removeSource(it)
+			}
+		}
+		return result
 	}
 
 }

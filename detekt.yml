@@ -51,55 +51,55 @@ console-reports:
 comments:
   active: true
   CommentOverPrivateFunction:
-    active: false
+    active: true
   CommentOverPrivateProperty:
-    active: false
+    active: true
   EndOfSentenceFormat:
     active: false
     endOfSentenceFormat: ([.?!][ \t\n\r\f<])|([.?!]$)
   UndocumentedPublicClass:
-    active: false
+    active: false # TODO this could be useful for sw-sdk module, but we need to exclude other non-public modules
     searchInNestedClass: true
     searchInInnerClass: true
     searchInInnerObject: true
     searchInInnerInterface: true
   UndocumentedPublicFunction:
-    active: false
+    active: false # TODO this could be useful for sw-sdk module, but we need to exclude other non-public modules
 
 complexity:
   active: true
   ComplexCondition:
-    active: false # fixme
-    threshold: 4
+    active: true
+    threshold: 5
   ComplexInterface:
-    active: false
+    active: true
     threshold: 10
     includeStaticDeclarations: false
   ComplexMethod:
-    active: false # fixme
+    active: false # don't know what: "MCC threshold for a method" means. Seems similar to LongMethod
     threshold: 10
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
   LabeledExpression:
     active: false
   LargeClass:
-    active: false # fixme
-    threshold: 150
+    active: true
+    threshold: 600
   LongMethod:
     active: true
-    threshold: 20
+    threshold: 40
   LongParameterList:
-    active: false # fixme
-    threshold: 6
+    active: true
+    threshold: 10
     ignoreDefaultParameters: false
   MethodOverloading:
     active: false
     threshold: 6
   NestedBlockDepth:
-    active: false # fixme
+    active: true
     threshold: 4
   StringLiteralDuplication:
-    active: false
+    active: true
     threshold: 3
     ignoreAnnotation: true
     excludeStringsWithLessThan5Characters: true
@@ -117,7 +117,7 @@ complexity:
 empty-blocks:
   active: true
   EmptyCatchBlock:
-    active: false # fixme
+    active: true
     allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
   EmptyClassBlock:
     active: true
@@ -153,7 +153,7 @@ exceptions:
     active: true
     methodNames: 'toString,hashCode,equals,finalize'
   InstanceOfCheckForException:
-    active: false
+    active: true
   NotImplementedDeclaration:
     active: true
   PrintStackTrace:
@@ -163,7 +163,7 @@ exceptions:
   ReturnFromFinally:
     active: true
   SwallowedException:
-    active: false
+    active: true
     ignoredExceptionTypes: 'InterruptedException,NumberFormatException,ParseException,MalformedURLException'
   ThrowingExceptionFromFinally:
     active: true
@@ -187,7 +187,7 @@ exceptions:
       - Throwable
     allowedExceptionNameRegex: "^(_|(ignore|expected).*)"
   TooGenericExceptionThrown:
-    active: false # fixme
+    active: true
     exceptionNames:
       - Error
       - Exception
@@ -215,48 +215,48 @@ formatting:
     active: false
     maxLineLength: 0
   ModifierOrdering:
-    active: false
+    active: true
   NoBlankLineBeforeRbrace:
     active: false
   NoConsecutiveBlankLines:
-    active: false # fixme
+    active: true
   NoEmptyClassBody:
-    active: false
+    active: true
   NoItParamInMultilineLambda:
-    active: false
-  NoLineBreakAfterElse:
-    active: false
-  NoLineBreakBeforeAssignment:
-    active: false
-  NoMultipleSpaces:
     active: false # fixme
+  NoLineBreakAfterElse:
+    active: true
+  NoLineBreakBeforeAssignment:
+    active: true
+  NoMultipleSpaces:
+    active: true
   NoSemicolons:
     active: true
   NoTrailingSpaces:
-    active: false
+    active: true
   NoUnitReturn:
-    active: false
+    active: true
   NoUnusedImports:
-    active: false # fixme
+    active: true
   NoWildcardImports:
     active: false
   ParameterListWrapping:
     active: false
     indentSize: 4
   SpacingAroundColon:
-    active: false
+    active: true
   SpacingAroundComma:
-    active: false
+    active: true
   SpacingAroundCurly:
-    active: false
+    active: true
   SpacingAroundKeyword:
-    active: false
+    active: true
   SpacingAroundOperators:
-    active: false
+    active: true
   SpacingAroundRangeOperator:
-    active: false
+    active: true
   StringTemplate:
-    active: false
+    active: true
 
 naming:
   active: true
@@ -275,11 +275,11 @@ naming:
     active: false
     forbiddenName: ''
   FunctionMaxLength:
-    active: false
-    maximumFunctionNameLength: 30
+    active: true
+    maximumFunctionNameLength: 40
   FunctionMinLength:
-    active: false
-    minimumFunctionNameLength: 3
+    active: true
+    minimumFunctionNameLength: 2
   FunctionNaming:
     active: true
     functionPattern: '^([a-z$][a-zA-Z$0-9]*)|(`.*`)$'
@@ -293,7 +293,7 @@ naming:
   MatchingDeclarationName:
     active: false # fixme
   MemberNameEqualsClassName:
-    active: false
+    active: true
     ignoreOverriddenFunction: true
   ObjectPropertyNaming:
     active: true
@@ -309,7 +309,7 @@ naming:
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
     privatePropertyPattern: '(_)?[A-Za-z][A-Za-z0-9]*'
   VariableMaxLength:
-    active: false
+    active: true
     maximumVariableNameLength: 64
   VariableMinLength:
     active: false
@@ -324,11 +324,11 @@ naming:
 performance:
   active: true
   ArrayPrimitive:
-    active: false
+    active: true
   ForEachOnRange:
     active: true
   SpreadOperator:
-    active: false # fixme
+    active: true
   UnnecessaryTemporaryInstantiation:
     active: true
 
@@ -337,7 +337,7 @@ potential-bugs:
   DuplicateCaseInWhenExpression:
     active: true
   EqualsAlwaysReturnsTrueOrFalse:
-    active: false
+    active: true
   EqualsWithHashCodeExist:
     active: true
   ExplicitGarbageCollectionCall:
@@ -363,7 +363,7 @@ potential-bugs:
   UselessPostfixExpression:
     active: true
   WrongEqualsTypeParameter:
-    active: false
+    active: true
 
 style:
   active: true
@@ -373,9 +373,9 @@ style:
     active: false
     conversionFunctionPrefix: 'to'
   EqualsNullCall:
-    active: false
+    active: true
   ExplicitItLambdaParameter:
-    active: false
+    active: true
   ExpressionBodySyntax:
     active: false
     includeLineWrapping: false
@@ -383,16 +383,16 @@ style:
     active: false # fixme
     values: 'TODO:,FIXME:,STOPSHIP:'
   ForbiddenImport:
-    active: false
+    active: true
     imports: ''
   ForbiddenVoid:
     active: false
   FunctionOnlyReturningConstant:
-    active: false
+    active: true
     ignoreOverridableFunction: true
     excludedFunctions: 'describeContents'
   LoopWithTooManyJumpStatements:
-    active: false
+    active: true
     maxJumpCount: 1
   MagicNumber:
     active: false # fixme
@@ -413,7 +413,7 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
   MayBeConst:
-    active: false
+    active: true
   ModifierOrder:
     active: true
   NestedClassesVisibility:
@@ -425,15 +425,15 @@ style:
   OptionalAbstractKeyword:
     active: true
   OptionalUnit:
-    active: false
+    active: true
   OptionalWhenBraces:
-    active: false
+    active: true
   PreferToOverPairSyntax:
     active: false
   ProtectedMemberInFinalClass:
     active: false
   RedundantVisibilityModifierRule:
-    active: false
+    active: true
   ReturnCount:
     active: false # fixme
     max: 2
@@ -455,7 +455,7 @@ style:
     active: true
     excludeAnnotatedClasses: "dagger.Module"
   UnnecessaryApply:
-    active: false
+    active: true
   UnnecessaryInheritance:
     active: true
   UnnecessaryLet:
@@ -463,7 +463,7 @@ style:
   UnnecessaryParentheses:
     active: false
   UntilInsteadOfRangeTo:
-    active: false
+    active: true
   UnusedImports:
     active: true
   UnusedPrivateClass:

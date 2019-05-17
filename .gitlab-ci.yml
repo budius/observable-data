@@ -21,7 +21,7 @@ merge_request:
   only:
     - merge_requests
   script:
-    - ./gradlew runAll
+    - ./gradlew detekt testDebugUnitTest lintDebug assembleDebug
 
 deploy_release:
   stage: deploy
@@ -36,4 +36,4 @@ deploy_release:
   only:
     - tags
   script:
-    - ./gradlew runAll uploadArchives
+    - ./gradlew detekt testDebugUnitTest lintDebug uploadArchives

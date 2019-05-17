@@ -3,9 +3,7 @@ package com.sensorberg.observable
 import androidx.lifecycle.LiveData
 import com.sensorberg.executioner.Executioner
 import java.util.*
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 @SuppressWarnings("UnnecessaryAbstractClass")
