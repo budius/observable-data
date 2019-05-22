@@ -178,4 +178,66 @@ object Transformations {
 		return result
 	}
 
+	fun <T> distinct(source: ObservableData<T>): ObservableData<T> {
+		val result = MediatorObservableData<T>()
+		result.addSource(source) { newValue ->
+			if (!newValue.superEquals(result.value)) {
+				result.value = newValue
+			}
+		}
+		return result
+	}
+
+	private fun <T> Collection<T>.superEqualsCollection(other: Collection<T>): Boolean {
+		if (this === other) return true
+		if (this.size != other.size) return false
+
+		if (!this.containsAll(other)) return false
+		if (!other.containsAll(this)) return false
+
+		val iteratorThis = this.iterator()
+		val iteratorOther = other.iterator()
+
+		while (iteratorThis.hasNext()) {
+			val v1 = iteratorThis.next()
+			val v2 = iteratorOther.next()
+			if (!v1.superEquals(v2)) return false
+		}
+		return true
+	}
+
+	private fun <T> List<T>.superEqualsList(other: List<T>): Boolean {
+		if (this === other) return true // I guess exact same instance is the fastest
+		if (size != other.size) return false
+
+		for (i in indices) {
+			val v1 = this[i]
+			val v2 = other[i]
+			if (!v1.superEquals(v2)) return false
+		}
+		return true
+	}
+
+	internal fun <T> T.superEquals(other: T): Boolean {
+		if (this === other) return true
+		if (this == null || other == null) {
+			return false
+		}
+
+		return when {
+			this is Array<*> && other is Array<*> -> (this.contentDeepEquals(other))
+			this is List<*> && other is List<*> -> (this.superEqualsList(other))
+			this is Collection<*> && other is Collection<*> -> (this.superEqualsCollection(other))
+			this is ByteArray && other is ByteArray -> (this.contentEquals(other))
+			this is ShortArray && other is ShortArray -> (this.contentEquals(other))
+			this is IntArray && other is IntArray -> (this.contentEquals(other))
+			this is LongArray && other is LongArray -> (this.contentEquals(other))
+			this is FloatArray && other is FloatArray -> (this.contentEquals(other))
+			this is DoubleArray && other is DoubleArray -> (this.contentEquals(other))
+			this is CharArray && other is CharArray -> (this.contentEquals(other))
+			this is BooleanArray && other is BooleanArray -> (this.contentEquals(other))
+			else -> (this == other)
+		}
+	}
+
 }

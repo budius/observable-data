@@ -2,6 +2,7 @@ package com.sensorberg.observable
 
 import org.junit.Assert.*
 import org.junit.Test
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -40,5 +41,21 @@ class TransformationsTestObserveNotNullSync {
 		tested.value = "true"
 		assertTrue(wait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
 		assertNull(received.get())
+	}
+
+	@Test(expected = IllegalAccessException::class) fun crashes_if_on_wrong_thread() {
+		val tested = MutableObservableData<String>()
+		val value = ArrayBlockingQueue<Exception>(1)
+		tested.observe {
+			try {
+				Transformations.observeNotNullSync(tested, 1, TimeUnit.MILLISECONDS) // crash
+			} catch (e: Exception) {
+				value.offer(e)
+			}
+		}
+		tested.value = "foo"
+		value.poll(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS)?.let {
+			throw it
+		}
 	}
 }
