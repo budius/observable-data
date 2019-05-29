@@ -159,7 +159,7 @@ object Transformations {
 	 */
 	fun <T> multiMap(sources: Collection<ObservableData<out Any>>,
 					 cancellation: Cancellation? = null,
-					 mapper: () -> T): ObservableData<T> {
+					 mapper: () -> T?): ObservableData<T> {
 		val result = MediatorObservableData<T>()
 		if (cancellation?.isCancelled == true) return result
 		val observer: Observer<Any> = {
