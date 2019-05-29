@@ -33,7 +33,7 @@ class TransformationsTestMulti {
 		val data1 = MutableObservableData<String>()
 		val data2 = MutableObservableData<String>()
 		val wait = CountDownLatch(2)
-		val result: ObservableData<Int> = Transformations.multiMap(listOf(data1, data2)) { wait.countDown() }
+		val result: ObservableData<Long> = Transformations.multiMap(listOf(data1, data2)) { wait.countDown(); wait.count }
 		result.observe { }
 		data1.value = "hello"
 		data2.value = "world"
@@ -45,9 +45,7 @@ class TransformationsTestMulti {
 		val data2 = MutableObservableData<String>()
 		val wait = CountDownLatch(2)
 		val value = AtomicInteger(0)
-		val result: ObservableData<Int> = Transformations.multiMap(listOf(data1, data2)) {
-			it.value = value.incrementAndGet()
-		}
+		val result: ObservableData<Int> = Transformations.multiMap(listOf(data1, data2)) { value.incrementAndGet() }
 		val received = AtomicInteger(-100)
 		result.observe { nullableInt ->
 			nullableInt?.let { received.set(it) }
@@ -64,7 +62,7 @@ class TransformationsTestMulti {
 		val data2 = MutableObservableData<String>()
 		val cancel = Cancellation()
 		val wait = CountDownLatch(1)
-		val result: ObservableData<Int> = Transformations.multiMap(listOf(data1, data2), cancel) { wait.countDown() }
+		val result: ObservableData<Long> = Transformations.multiMap(listOf(data1, data2), cancel) { wait.countDown(); wait.count }
 		result.observe { }
 		cancel.cancel()
 		data1.value = "hello"
