@@ -154,16 +154,17 @@ object Transformations {
 
 	/**
 	 * Maps from a collection of ObservableData to a new ObservableData.
+	 * The lambda will receive the data current value, this can be used to help processing complex data.
 	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called.
 	 * If the cancellation value is already true when invoked, nothing will be executed and the returned result value won't change.
 	 */
 	fun <T> multiMap(sources: Collection<ObservableData<out Any>>,
 					 cancellation: Cancellation? = null,
-					 mapper: () -> T?): ObservableData<T> {
+					 mapper: (T?) -> T?): ObservableData<T> {
 		val result = MediatorObservableData<T>()
 		if (cancellation?.isCancelled == true) return result
 		val observer: Observer<Any> = {
-			result.value = mapper.invoke()
+			result.value = mapper.invoke(result.value)
 		}
 		sources.forEach {
 			result.addSource(it, observer)

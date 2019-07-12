@@ -5,6 +5,7 @@ import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 class TransformationsTestMulti {
 
@@ -67,5 +68,36 @@ class TransformationsTestMulti {
 		cancel.cancel()
 		data1.value = "hello"
 		assertFalse(wait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+	}
+
+	@Test fun multiMap_receives_the_last_value() {
+		val wait = AtomicReference(CountDownLatch(1))
+		val data1 = MutableObservableData<String>()
+		val data2 = MutableObservableData<String>()
+
+		val expected = mutableListOf(null, 1, 2, 3)
+		val mapped = AtomicInteger(0)
+		val result: ObservableData<Int> = Transformations.multiMap(listOf(data1, data2)) {
+			val next = expected.removeAt(0)
+			assertEquals(next, it)
+			wait.get().countDown()
+			mapped.incrementAndGet()
+		}
+		result.observe {}
+
+		data1.value = "0"
+		assertTrue(wait.get().await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+		wait.set(CountDownLatch(1))
+		data2.value = "1"
+		assertTrue(wait.get().await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+		wait.set(CountDownLatch(1))
+		data1.value = "2"
+		assertTrue(wait.get().await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+		wait.set(CountDownLatch(1))
+		data1.value = "3"
+		assertTrue(wait.get().await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
+
+		assertTrue(expected.isEmpty())
+
 	}
 }
