@@ -16,10 +16,6 @@ internal class ExportLiveData<T>(private val source: ObservableData<T>) : LiveDa
 		source.removeObserver(observer)
 	}
 
-	private val observer: Observer<T> = {
-		if (it != super.getValue()) {
-			postValue(it)
-		}
-	}
+	private val observer: Observer<T> = { postValue(it) }
 
 }
