@@ -76,6 +76,6 @@ class TransformationsTestNullOnCancelled {
 		assertTrue(cancelWait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
 		source.value = "world"
 		assertFalse(worldWait.await(ObservableDataTest.TIMEOUT, TimeUnit.MILLISECONDS))
-
+		assertNull(received.get())
 	}
 }
