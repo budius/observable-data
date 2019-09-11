@@ -143,9 +143,11 @@ object Transformations {
 	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and [onDataChanged] won't be called.
 	 * If the cancellation value is already true when invoked, nothing will be executed.
 	 */
-	fun multiObserve(sources: Collection<ObservableData<out Any>>,
-					 cancellation: Cancellation? = null,
-					 onDataChanged: () -> Unit) {
+	fun multiObserve(
+		sources: Collection<ObservableData<out Any>>,
+		cancellation: Cancellation? = null,
+		onDataChanged: () -> Unit
+					) {
 		if (cancellation?.isCancelled == true) return
 		val sourcesObserver: Observer<Any> = { onDataChanged.invoke() }
 		sources.forEach { it.observe(sourcesObserver) }
@@ -158,9 +160,11 @@ object Transformations {
 	 * When the (optional) [Cancellation.cancel] is invoked, this will remove any pending observers and the [mapper] won't be called.
 	 * If the cancellation value is already true when invoked, nothing will be executed and the returned result value won't change.
 	 */
-	fun <T> multiMap(sources: Collection<ObservableData<out Any>>,
-					 cancellation: Cancellation? = null,
-					 mapper: (T?) -> T?): ObservableData<T> {
+	fun <T> multiMap(
+		sources: Collection<ObservableData<out Any>>,
+		cancellation: Cancellation? = null,
+		mapper: (T?) -> T?
+					): ObservableData<T> {
 		val result = MediatorObservableData<T>()
 		if (cancellation?.isCancelled == true) return result
 		val observer: Observer<Any> = {
@@ -182,6 +186,24 @@ object Transformations {
 		result.addSource(source) { newValue ->
 			if (!newValue.superEquals(result.value)) {
 				result.value = newValue
+			}
+		}
+		return result
+	}
+
+	/**
+	 * Returns a new ObservableData that will mirror the value of the source until a cancellation happens,
+	 * onCancelled, the value will change to `null` and won't change anymore.
+	 */
+	fun <T> nullOnCancelled(source: ObservableData<T>, cancellation: Cancellation): ObservableData<T> {
+		val result = MediatorObservableData<T>()
+		result.addSource(source) { newValue ->
+			result.value = newValue
+		}
+		cancellation.onCancelled {
+			result.removeSource(source)
+			if (result.value != null) {
+				result.value = null
 			}
 		}
 		return result
